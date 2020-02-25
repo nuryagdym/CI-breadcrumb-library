@@ -5,8 +5,8 @@ $config['make_bread_default'] = array(
   //sub_url will be added before all urls. for example, if /users path is added and sub_url = admin then breadcrumb URL will be https://example.com/admin/users and so on.
 	'sub_url' => '',
   
-  //will tell the library if the first element should be the homepage. You only put the title of the first crumb. If you leave it blank it will not put homepage as first crumb
-	'include_home' => '<li class="m-nav__item m-nav__item--home"><a href="#" class="m-nav__link m-nav__link--icon"><i class="m-nav__link-icon la la-home"></i></a></li>',
+  //The format of the home (the first crumb) crumb. If you leave it blank it will not put homepage as first crumb
+	'home_format' => '<li class="m-nav__item m-nav__item--home"><a href="%s" class="m-nav__link m-nav__link--icon"><i class="m-nav__link-icon la la-home"></i></a></li>',
   
   //the divider you want between the crumbs. Leave blank if you don't want a divider;
 	'divider' => '<li class="m-nav__separator">-</li>',
