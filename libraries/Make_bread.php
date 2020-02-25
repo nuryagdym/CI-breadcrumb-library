@@ -2,118 +2,120 @@
 
 class Make_bread
 {
-    private $_breadcrumb = array();
-    private $_include_home;
-    private $_container_open;
-    private $_container_close;
-    private $_divider;
-    private $_crumb_open;
-    private $_crumb_close;
-    
-    private $_anchor_format;
+	private $_breadcrumb = array();
+	private $_container_open;
+	private $_container_close;
+	private $_divider;
+	private $_crumb_open;
+	private $_crumb_close;
 
-    private $_all_configs;
-    private $_sub_url = '';
-    
-    public function __construct($configs = NULL)
-    {
-        $CI =& get_instance();
-        $CI->load->helper('url');
-        if(!$configs){
-            $CI->config->load('make_bread', TRUE);
-            $configs = $CI->config->item('make_bread');
-        }
-        $this->_all_configs = $configs;        
+	private $_home_format;
+	private $_anchor_format;
 
-        $configs = $configs['make_bread_default'];
+	private $_all_configs;
+	private $_sub_url = '';
 
-        $this->set_configs($configs);
-    }
+	public function __construct($configs = NULL)
+	{
+		$CI =& get_instance();
+		$CI->load->helper('url');
+		if(!$configs){
+			$CI->config->load('make_bread', TRUE);
+			$configs = $CI->config->item('make_bread');
+		}
+		$this->_all_configs = $configs;
 
-    public function add($title = NULL, $href = '', $segment = FALSE)
-    {
-        // if the method won't receive the $title parameter, it won't do anything to the $_breadcrumb
-        if (is_null($title)) return;
-        // first let's find out if we have a $href
-        if(isset($href) && strlen($href)>0)
-        {
-            // if $segment is not FALSE we will build the URL from the previous crumb
-            if ($segment)
-            {
-                $previous = $this->_breadcrumb[sizeof($this->_breadcrumb) - 1]['href'];
-                $href = $previous . '/' . $href;
-            } // else if the $href is not an absolute path we compose the URL from our site's URL
-            elseif (!filter_var($href, FILTER_VALIDATE_URL))
-            {
-                $href = site_url($this->_sub_url . $href);
-            }
-        }
-        // add crumb to the end of the breadcrumb
-        $this->_breadcrumb[] = array('title' => $title, 'href' => $href);
-    }
+		$configs = $configs['make_bread_default'];
 
-    public function output()
-    {
-        // we open the container's tag
-        $output = $this->_container_open;
-        if(sizeof($this->_breadcrumb) > 0)
-        {
-            $i = 1;
-            foreach($this->_breadcrumb as $key=>$crumb)
-            {
-                // we put the crumb with open and closing tags
-                $output .= $this->_crumb_open;
-                if(strlen($crumb['href'])>0)
-                {
-                    $output .= sprintf($this->_anchor_format, $crumb['href'], $crumb['title'], $i);
-                }
-                else
-                {
+		$this->set_configs($configs);
+	}
 
-                    $output .= '<span>'.$crumb['title'].'</span>';
-                }
-                $output .= $this->_crumb_close;
-                // we end the crumb with the divider if is not the last crumb
-                if($key < (sizeof($this->_breadcrumb)-1))
-                {
-                    $output .= $this->_divider;
-                }
-                $i++;
-            }
-        }
-        // we close the container's tag
-        $output .= $this->_container_close;
-        return $output;
-    }
-    
-    public function reset_bread_crumbs(){
-        $new_bread_crumb[0] = $this->_breadcrumb[0];
-        $this->_breadcrumb = $new_bread_crumb;
-    }
-    
-    public function set_configs($configs)
-    {
-        $this->_include_home = $configs['include_home'];
-        $this->_container_open = $configs['container_open'];
-        $this->_container_close = $configs['container_close'];
-        $this->_divider = $configs['divider'];
-        $this->_crumb_open = $configs['crumb_open'];
-        $this->_crumb_close = $configs['crumb_close'];
-        $this->_anchor_format = $configs['anchor_format'];
-        $this->_sub_url = isset($configs['sub_url']) ? $configs['sub_url'] : '';
+	public function add($title = NULL, $href = '', $segment = FALSE)
+	{
+		// if the method won't receive the $title parameter, it won't do anything to the $_breadcrumb
+		if (is_null($title)) return;
+		// first let's find out if we have a $href
+		if(isset($href) && strlen($href)>0)
+		{
+			// if $segment is not FALSE we will build the URL from the previous crumb
+			if ($segment)
+			{
+				$previous = $this->_breadcrumb[sizeof($this->_breadcrumb) - 1]['href'];
+				$href = $previous . '/' . $href;
+			} // else if the $href is not an absolute path we compose the URL from our site's URL
+			elseif (!filter_var($href, FILTER_VALIDATE_URL))
+			{
+				$href = site_url($this->_sub_url . $href);
+			}
+		}
+		// add crumb to the end of the breadcrumb
+		$this->_breadcrumb[] = array('title' => $title, 'href' => $href);
+	}
 
-        if(isset($this->_include_home) && (strlen($this->_include_home)>0))
-        {
-            $this->_breadcrumb[0] = array('title'=>$this->_include_home, 'href'=>rtrim(base_url($this->_sub_url),'/'));
-        }
-    }
+	public function output()
+	{
+		// we open the container's tag
+		$output = $this->_container_open;
+		if(sizeof($this->_breadcrumb) > 0)
+		{
+			$i = 1;
+			foreach($this->_breadcrumb as $key=>$crumb)
+			{
+				if(is_string($crumb)){
+					$output .= $crumb;
+				}else {
+					// we put the crumb with open and closing tags
+					$output .= $this->_crumb_open;
+					if (strlen($crumb['href']) > 0) {
+						$output .= sprintf($this->_anchor_format, $crumb['href'], $crumb['title'], $i);
+					} else {
 
-    public function switch_config($config_name)
-    {
-        if(isset($this->_all_configs[$config_name])){
-            $this->set_configs($this->_all_configs[$config_name]);
-            return true;
-        }
-        return false;
-    }
+						$output .= '<span>' . $crumb['title'] . '</span>';
+					}
+					$output .= $this->_crumb_close;
+				}
+				// we end the crumb with the divider if is not the last crumb
+				if ($key < (sizeof($this->_breadcrumb) - 1)) {
+					$output .= $this->_divider;
+				}
+				$i++;
+			}
+		}
+		// we close the container's tag
+		$output .= $this->_container_close;
+		return $output;
+	}
+
+	public function reset_bread_crumbs(){
+		$new_bread_crumb[0] = $this->_breadcrumb[0];
+		$this->_breadcrumb = $new_bread_crumb;
+	}
+
+	public function set_configs($configs)
+	{
+		//$this->_include_home = $configs['include_home'];
+		$this->_home_format = $configs['home_format'];
+		$this->_container_open = $configs['container_open'];
+		$this->_container_close = $configs['container_close'];
+		$this->_divider = $configs['divider'];
+		$this->_crumb_open = $configs['crumb_open'];
+		$this->_crumb_close = $configs['crumb_close'];
+		$this->_anchor_format = $configs['anchor_format'];
+		$this->_sub_url = isset($configs['sub_url']) ? $configs['sub_url'] : '';
+
+		if(isset($this->_home_format) && (strlen($this->_home_format)>0))
+		{
+			$this->_breadcrumb[0] = sprintf($this->_home_format, rtrim(base_url($this->_sub_url),'/'));
+			//$this->_breadcrumb[0] = array('title'=>$this->_include_home, 'href'=>rtrim(base_url($this->_sub_url),'/'));
+		}
+	}
+
+	public function switch_config($config_name)
+	{
+		if(isset($this->_all_configs[$config_name])){
+			$this->set_configs($this->_all_configs[$config_name]);
+			return true;
+		}
+		return false;
+	}
 }
