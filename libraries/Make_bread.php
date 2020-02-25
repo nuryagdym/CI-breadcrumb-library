@@ -20,8 +20,8 @@ class Make_bread
         $CI =& get_instance();
         $CI->load->helper('url');
         if(!$configs){
-            $CI->config->load('phpmailer', TRUE);
-            $configs = $CI->config->item('phpmailer');
+            $CI->config->load('make_bread', TRUE);
+            $configs = $CI->config->item('make_bread');
         }
         $this->_all_configs = $configs;        
 
