@@ -65,9 +65,7 @@ class Make_bread
                 $output .= $this->_crumb_open;
                 if(strlen($crumb['href'])>0)
                 {
-                    $output .= '<a itemprop="item" href="' . $crumb['href'] . '">
-                    <span itemprop="name">' .  $crumb['title'] . '</span></a>
-                    <meta itemprop="position" content="' .$i . '" />';
+                    $output .= sprintf($this->_anchor_format, $crumb['href'], $crumb['title'], $i);
                 }
                 else
                 {
@@ -101,6 +99,7 @@ class Make_bread
         $this->_divider = $configs['divider'];
         $this->_crumb_open = $configs['crumb_open'];
         $this->_crumb_close = $configs['crumb_close'];
+        $this->_anchor_format = $configs['anchor_format'];
         $this->_sub_url = isset($configs['sub_url']) ? $configs['sub_url'] : '';
 
         if(isset($this->_include_home) && (strlen($this->_include_home)>0))
